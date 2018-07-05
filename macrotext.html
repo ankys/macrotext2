@@ -1,0 +1,26 @@
+<script type="text/javascript" src="macrotext.js"></script>
+<script type="text/javascript">
+(function() {
+	var search = location.search;
+if (search !== "") {
+	var text = decodeURIComponent(search.replace(/^\?/, ""));
+	var callback = function(code, src, args) {
+		var type = mt.getMessageType(code);
+		if (type === "Debug") {
+			// return;
+		}
+		var pos = src.pos;
+		var len = src.len;
+		console.log(type, pos, len, code, args);
+	};
+	var mt = MacroText.create({ allowSystem: true, callback: callback });
+	console.log(text);
+	var node = mt.parse(text);
+	// console.log(node);
+	console.log(node.toString());
+	var value = mt.evaluate(node);
+	// console.log(value);
+	console.log(value.toString());
+}
+})();
+</script>
