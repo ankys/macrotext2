@@ -94,7 +94,7 @@ function evalExpr(expr, args) {
 	return eval(expr);
 }
 
-const messageTypes = {
+var messageTypes = {
 	TOKEN: "Debug",
 	LITTLEVME: "Warning",
 	LITTLEME: "Warning",
@@ -106,7 +106,7 @@ const messageTypes = {
 	NOMODULE: "Warning",
 	MESSAGE: "Message",
 };
-const messagesC = {
+var messagesC = {
 	TOKEN: "token $1",
 	LITTLEVME: "no end to \\$1",
 	LITTLEME: "too few }",
@@ -129,16 +129,16 @@ function fireCallback(callback, code, src, args) {
 }
 
 // parse
-var peg = `
-mtext = (macro / block / verbatim / escape / text)*
-macro = "\\\\" "@"? [a-zA-Z0-9_]+ (whitespace* arg)*
-block = arg (whitespace* arg)*
-arg = "{" mtext "}"
-verbatim = "\\\\@{" (!"\\\\@}" .)* "\\\\@}"
-escape = "\\\\" [^@a-zA-Z0-9_]
-whitespace = [ \\t\\n\\r\\f]
-text = [^\\\\{}]+
-`;
+// var peg = `
+// mtext = (macro / block / verbatim / escape / text)*
+// macro = "\\\\" "@"? [a-zA-Z0-9_]+ (whitespace* arg)*
+// block = arg (whitespace* arg)*
+// arg = "{" mtext "}"
+// verbatim = "\\\\@{" (!"\\\\@}" .)* "\\\\@}"
+// escape = "\\\\" [^@a-zA-Z0-9_]
+// whitespace = [ \\t\\n\\r\\f]
+// text = [^\\\\{}]+
+// `;
 
 // node
 var Src = function(tag, pos, len) {
