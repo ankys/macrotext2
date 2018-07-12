@@ -24,3 +24,22 @@ if (search !== "") {
 }
 })();
 </script>
+
+<textarea id="input" style="width: 40%; height: 90%">
+test
+</textarea>
+<textarea id="output" readonly style="width: 40%; height: 90%">
+</textarea>
+<script type="text/javascript">
+var eInput = document.getElementById("input");
+var eOutput = document.getElementById("output");
+
+function convert() {
+	var mt = MacroText.create({ allowSystem: true, callback: null });
+	var textInput = eInput.value;
+	var textOutput = mt.evaluateAsString(mt.parse(textInput));
+	eOutput.value = textOutput;
+}
+eInput.addEventListener("change", convert);
+convert();
+</script>
