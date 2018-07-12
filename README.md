@@ -1,6 +1,8 @@
 
 # MacroText
 
+A text preprocessor with TeX-like syntax and powerful preset macros.
+
 ## Examples
 
 ```
