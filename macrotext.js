@@ -696,6 +696,7 @@ function evalRMacro(rmacro, argument, name, args, node, mt, callback) {
 }
 function evalMacro(macro, args, flagNoCall, node, mt, callback, index) {
 	index = index || 0;
+	var self = null;
 	function sub(macro, index) {
 	if (macro instanceof Node) {
 		if (!flagNoCall) {
@@ -711,6 +712,10 @@ function evalMacro(macro, args, flagNoCall, node, mt, callback, index) {
 		}
 	} else if (macro instanceof Value) {
 	} else if (macro instanceof ValueSequence) {
+	} else if (isNull(macro)) {
+	} else if (isBoolean(macro)) {
+	} else if (isNumber(macro)) {
+	} else if (isString(macro)) {
 	} else if (isFunction(macro)) {
 		if (!flagNoCall) {
 			var func = macro;
@@ -718,7 +723,7 @@ function evalMacro(macro, args, flagNoCall, node, mt, callback, index) {
 			var objs = args2.map(function(arg) {
 				return mt.evaluateAsObject(arg);
 			});
-			var r = func.apply(null, objs);
+			var r = func.apply(self, objs);
 			return r;
 		}
 	} else if (isList(macro)) {
@@ -740,6 +745,16 @@ function evalMacro(macro, args, flagNoCall, node, mt, callback, index) {
 		var macro = dict[key];
 		return sub(macro, index + 1);
 	} else {
+		// js object
+		if (!(index < args.length)) {
+			return macro;
+		}
+		var obj = macro;
+		var arg = args[index];
+		var key = mt.evaluateAsString(arg);
+		var macro = obj[key];
+		self = obj;
+		return sub(macro, index + 1);
 	}
 	if (index < args.length) {
 		fireCallback(callback, "EXCESSARGS", node.src, []);
@@ -855,7 +870,9 @@ function getString(value) {
 			str += " ";
 		}
 	} else {
-		str += "[object]";
+		// str += "[object]";
+		var o = v;
+		str += o.toString();
 	}
 	}
 	sub(value);
@@ -915,7 +932,9 @@ function getList(value) {
 		}
 		lists.push(list);
 	} else {
-		str += "[object]";
+		// str += "[object]";
+		var o = v;
+		str += o.toString();
 	}
 	}
 	sub(value);
@@ -983,7 +1002,9 @@ function getDict(value) {
 		var d = v;
 		dicts.push(d);
 	} else {
-		str += "[object]";
+		// str += "[object]";
+		var o = v;
+		str += o.toString();
 	}
 	}
 	sub(value);
