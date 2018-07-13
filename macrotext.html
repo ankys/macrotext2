@@ -40,7 +40,7 @@ var eOutput = document.getElementById("output");
 function convert() {
 	var mt = MacroText.create({ allowSystem: true, callback: null });
 	var textInput = eInput.value;
-	var textOutput = mt.evaluateAsString(mt.parse(textInput));
+	var textOutput = mt.processAsString(textInput);
 	eOutput.value = textOutput;
 }
 eInput.addEventListener("change", convert);

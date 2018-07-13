@@ -1218,6 +1218,37 @@ MacroText.prototype.getList = getList;
 MacroText.prototype.getDict = getDict;
 MacroText.prototype.getObject = getObject;
 MacroText.prototype.getStringList = getStringList;
+MacroText.prototype.process = function(text, tag, callback) {
+	callback = callback || this.cbfunc;
+	return evaluate(parse(text, callback, tag), this, callback);
+};
+MacroText.prototype.processAsBoolean = function(text, tag, callback) {
+	return getBoolean(this.process.apply(this, arguments));
+};
+MacroText.prototype.processAsNumber = function(text, tag, callback) {
+	return getNumber(this.process.apply(this, arguments));
+};
+MacroText.prototype.processAsInteger = function(text, tag, callback) {
+	return getInteger(this.process.apply(this, arguments));
+};
+MacroText.prototype.processAsString = function(text, tag, callback) {
+	return getString(this.process.apply(this, arguments));
+};
+MacroText.prototype.processAsFunction = function(text, tag, callback) {
+	return getFunction(this.process.apply(this, arguments));
+};
+MacroText.prototype.processAsList = function(text, tag, callback) {
+	return getList(this.process.apply(this, arguments));
+};
+MacroText.prototype.processAsDict = function(text, tag, callback) {
+	return getDict(this.process.apply(this, arguments));
+};
+MacroText.prototype.processAsObject = function(text, tag, callback) {
+	return getObject(this.process.apply(this, arguments));
+};
+MacroText.prototype.processAsStringList = function(text, tag, callback) {
+	return getStringList(this.process.apply(this, arguments));
+};
 MacroText.prototype.addRMacro = function(rmacro) {
 	var rmacros = this.rmacros;
 	Array.prototype.push.apply(rmacros, arguments);
