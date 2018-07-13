@@ -28,25 +28,46 @@ if (search !== "") {
 })();
 </script>
 
-<textarea id="input" style="width: 40%; height: 90%">
+<textarea id="input" style="width: 30%; height: 90%">
 test
+
+Hello, world!
+\say{Hello, world!}
 
 \import{Math}
 \Math{PI}
 \import{Date}
 \Date
+\seto{a}{\new{\pick{Date}}}\a{toISOString}
 </textarea>
-<textarea id="output" readonly style="width: 40%; height: 90%">
+<textarea id="output" readonly style="width: 30%; height: 90%">
+</textarea>
+<textarea id="error" readonly style="width: 30%; height: 90%">
 </textarea>
 <script type="text/javascript">
 var eInput = document.getElementById("input");
 var eOutput = document.getElementById("output");
+var eError = document.getElementById("error");
 
 function convert() {
-	var mt = MacroText.create({ allowSystem: true, callback: null });
+	var textError = "";
+	var callback = function(code, src, getMsg) {
+		var type = mt.getMessageType(code);
+		if (type === "Debug") {
+			return;
+		}
+		var pos = src.pos;
+		var len = src.len;
+		var tag = src.tag;
+		var file = "-";
+		var msg = getMsg();
+		textError += type + ": " + msg + "\n";
+	};
+	var mt = MacroText.create({ allowSystem: true, callback: callback });
 	var textInput = eInput.value;
 	var textOutput = mt.processAsString(textInput);
 	eOutput.value = textOutput;
+	eError.value = textError;
 }
 eInput.addEventListener("change", convert);
 convert();
