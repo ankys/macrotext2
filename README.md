@@ -2,6 +2,7 @@
 # MacroText
 
 A text preprocessor with TeX-like syntax and powerful preset macros.
+[Live demo](https://ankys.github.io/macrotext2/test.html)
 
 ## Examples
 
