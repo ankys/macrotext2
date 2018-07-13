@@ -168,6 +168,12 @@ var NodeLineComment = newClass(Node, function(src, line, flag, eol) {
 	this.flag = flag;
 	this.eol = eol;
 });
+var NodeBlockComment = newClass(Node, function(src, str, flag, lack) {
+	Node.call(this, src);
+	this.str = str;
+	this.flag = flag;
+	this.lack = lack;
+});
 var NodeVerbatim = newClass(Node, function(src, str, flag, lack) {
 	Node.call(this, src);
 	this.str = str;
@@ -205,7 +211,7 @@ function parse(text, callback, tag) {
 		return new Src(tag, pos, len);
 	}
 	// var lexer = /\\(?:\x0D\x0A|\x0D|\x0A|$)|\\@\{|\\@\}|\\@?\w+(?:\s*\{)?|\{|\}(?:\s*\{)?|\\.|[^\\\{\}]+/g;
-	var lexer = /\\(?:\x0D\x0A|\x0D|\x0A|$)|\\\/+[^]*?(?:\x0D\x0A|\x0D|\x0A|$)|\\(`+)[^]*?(:?\1|$)|\\@\{[^]*?(:?\\@\}|$)|\\(?:\+|-|=|%|\^|&|\*|@\w+|!\w+|\w+)(?:\s*\{)?|\{|\}(?:\s*\{)?|\\#[0-9]+|\\#x[0-9a-fA-F]+|\\[^]|[^\\\{\}]+/g;
+	var lexer = /\\(?:\x0D\x0A|\x0D|\x0A|$)|\\\/+[^]*?(?:\x0D\x0A|\x0D|\x0A|$)|\\!\{[^]*?(?:\\!\}|$)|\\(`+)[^]*?(?:\1|$)|\\@\{[^]*?(?:\\@\}|$)|\\(?:\+|-|=|%|\^|&|\*|@\w+|!\w+|\w+)(?:\s*\{)?|\{|\}(?:\s*\{)?|\\#[0-9]+|\\#x[0-9a-fA-F]+|\\[^]|[^\\\{\}]+/g;
 	var nodesRoot = [];
 	var macrolistS = [];
 	function addNode(node) {
@@ -255,6 +261,12 @@ function parse(text, callback, tag) {
 			addNode(new NodeSkippedEOL(src, m[1]));
 		} else if (m = str.match(/^\\(\/+)([^]*?)(\x0D\x0A|\x0D|\x0A|$)$/)) {
 			addNode(new NodeLineComment(src, m[2], m[1], m[3]));
+		} else if (m = str.match(/^\\(!\{)([^]*?)(\\!\}|$)/)) {
+			var lack = m[3] === "";
+			addNode(new NodeBlockComment(src, m[2], m[1], lack));
+			if (lack) {
+				fireCallback(callback, "LITTLEVME", src, [m[1]]);
+			}
 		} else if (m = str.match(/^\\(`+)([^]*?)(\1|$)/)) {
 			// scalar in vervatime mode
 			var lack = m[3] === "";
@@ -347,6 +359,11 @@ function printNode(node) {
 		var flag = node.flag;
 		var eol = node.eol;
 		str += "\\" + flag + line + eol;
+	} else if (node instanceof NodeBlockComment) {
+		var s = node.str;
+		var flag = node.flag;
+		var lack = node.lack;
+		str += "\\!\{" + s + "\\!\}";
 	} else if (node instanceof NodeVerbatim) {
 		var s = node.str;
 		var flag = node.flag;
@@ -539,7 +556,7 @@ function evaluate(node, mt, callback, hook) {
 	if (node instanceof NodeTopLevel) {
 		var value = evalNodelist(node);
 		return value;
-	} else if (node instanceof NodeSkippedEOL || node instanceof NodeLineComment) {
+	} else if (node instanceof NodeSkippedEOL || node instanceof NodeLineComment || node instanceof NodeBlockComment) {
 		var value = new Value(node.src, undefined);
 		node.value = value;
 		return value;

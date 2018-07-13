@@ -7,6 +7,7 @@
 
 ===parse
 \@{\a\@}
+\!{aaa\!}
 aaaaaaaa\\\
 \``
 \ \a \`
@@ -15,6 +16,7 @@ aaaaaaaa\\\
 \ \a `\`
 ---
 \\a
+
 aaaaaaaa\\
 \\ \\a \\`
 
