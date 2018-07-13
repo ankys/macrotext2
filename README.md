@@ -15,7 +15,7 @@ $ node macrotext.js '\set_list{a}{1 2}\join{:}{\map{\add{\_}{2}}{\a}}'
 3:4
 ```
 
-And see `test.txt`.
+And see `test.txt` and `test.html`.
 
 ## License
 
