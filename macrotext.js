@@ -2423,7 +2423,6 @@ var rmacros_std = [
 				return this.evaluateAsObject(arg);
 			}, this);
 			var r = Reflect.construct(func, objs);
-			console.log(r);
 			return r;
 		}
 	},

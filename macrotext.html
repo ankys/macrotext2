@@ -4,14 +4,17 @@
 	var search = location.search;
 if (search !== "") {
 	var text = decodeURIComponent(search.replace(/^\?/, ""));
-	var callback = function(code, src, args) {
+	var callback = function(code, src, getMsg) {
 		var type = mt.getMessageType(code);
 		if (type === "Debug") {
 			// return;
 		}
 		var pos = src.pos;
 		var len = src.len;
-		console.log(type, pos, len, code, args);
+		var tag = src.tag;
+		var file = "-";
+		var msg = getMsg();
+		console.log("%s:%s:%s:%s: %s", file, pos, len, type, msg);
 	};
 	var mt = MacroText.create({ allowSystem: true, callback: callback });
 	console.log(text);
