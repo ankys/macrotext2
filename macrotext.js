@@ -2345,9 +2345,12 @@ var rmacros_std = [
 	{
 		name: "keys",
 		num_arg: 1,
-		func: function(dictA) {
-			var dict = this.evaluateAsDict(dictA);
-			var keys = Object.keys(dict);
+		func: function(kvlistA) {
+			var kvlist = this.evaluateAsList(kvlistA);
+			var keys = [];
+			KvlistForEach(kvlist, function(key, value) {
+				keys.push(key);
+			});
 			return keys;
 		}
 	},
@@ -2355,10 +2358,28 @@ var rmacros_std = [
 	{
 		name: "values",
 		num_arg: 1,
-		func: function(dictA) {
-			var dict = this.evaluateAsDict(dictA);
-			var values = Object.values(dict);
-			return values;
+		func: function(kvlistA) {
+			var kvlist = this.evaluateAsList(kvlistA);
+			var values = [];
+			KvlistForEach(kvlist, function(key, value) {
+				values.push(value);
+			});
+			return keys;
+		}
+	},
+// kvfor
+	{
+		name: "kvfor",
+		names: ["kvfor", "kvlist_for", "kvforeach", "kvlist_foreach", "dfor", "dict_for", "dforeach", "dict_foreach"],
+		num_arg: 2,
+		func: function(arg, kvlistA) {
+			var kvlist = this.evaluateAsList(kvlistA);
+			KvlistForEach(kvlist, function(key, value) {
+				this.evaluate(arg, function(mt) {
+					mt.addMacro("a", key);
+					mt.addMacro("b", value);
+				});
+			}, this);
 		}
 	},
 // kvmap
