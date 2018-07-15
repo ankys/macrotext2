@@ -20,6 +20,15 @@ function newClass(parent, constructor) {
 	c.prototype = Object.create(parent.prototype);
 	return c;
 }
+var Reflect = global.Reflect || {};
+Reflect.construct = Reflect.construct || function(target, argumentsList) {
+	return new (target.bind.apply(target, [null].concat(argumentsList)))();
+};
+Array.from = Array.from || function(arrayLike) {
+	var array = [];
+	Array.prototype.push.apply(array, arrayLike);
+	return array;
+}
 Array.concat = function() {
 	return Array.prototype.concat.apply([], arguments);
 };
@@ -46,6 +55,17 @@ Array.prototype.alltwo = function(condition, self) {
 		}
 	}
 	return true;
+};
+Array.prototype.find = Array.prototype.find || function(callback, self) {
+	var array = this;
+	for (var i = 0; i < array.length; i++) {
+		var element = array[i];
+		var b = callback.call(self, element, i, array);
+		if (b) {
+			return element;
+		}
+	}
+	return undefined;
 };
 Object.assign = Object.assign || function(target) {
 	for (var i = 1; i < arguments.length; i++) {
@@ -78,6 +98,9 @@ Object.map = function(obj, callback, self) {
 	}
 	return obj2;
 };
+Number.isNaN = Number.isNaN || isNaN;
+Number.parseInt = Number.parseInt || parseInt;
+Number.parseFloat = Number.parseFloat || parseFloat;
 function StringFormatList(format, args) {
 	var str = format.replace(/(\$(\$|[0-9]+))/g, function(match, s, a) {
 		var s2;
@@ -2480,7 +2503,6 @@ var rmacros_std = [
 			return r;
 		}
 	},
-
 { name: "obj",
 	max_arg: 1,
 	func: function(arg) {
