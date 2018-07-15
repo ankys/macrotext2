@@ -67,6 +67,15 @@ Array.prototype.find = Array.prototype.find || function(callback, self) {
 	}
 	return undefined;
 };
+function KvlistForEach(kvlist, callback, self) {
+	var index = 0;
+	for (var i = 0; i + 1 < kvlist.length; i += 2) {
+		var key = kvlist[i];
+		var value = kvlist[i + 1];
+		callback.call(self, key, value, index, kvlist);
+		index++;
+	}
+}
 Object.assign = Object.assign || function(target) {
 	for (var i = 1; i < arguments.length; i++) {
 		var source = arguments[i];
@@ -651,12 +660,10 @@ function evalMacroCall(node, mt, callback) {
 			return evaluate(arg, mt, callback);
 		});
 		var dict = {};
-		for (var i = 0; i + 1 < values.length; i += 2) {
-			var keyV = values[i];
-			var valueV = values[i + 1];
+		KvlistForEach(values, function(keyV, valueV) {
 			var key = getString(keyV);
 			dict[key] = valueV;
-		}
+		});
 		return dict;
 	} else if (m = command.match(/^@(\w+)$/)) {
 		var name = m[1];
@@ -998,12 +1005,10 @@ function getDict(value) {
 		var strs = parseList(str);
 		if (strs.length === 0) return;
 		var dict = {};
-		for (var i = 0; i + 1 < strs.length; i += 2) {
-			var key = strs[i];
-			var value = strs[i + 1];
+		KvlistForEach(strs, function(key, value) {
 			var valueV = new Value(src, value);
 			dict[key] = valueV;
-		}
+		});
 		dicts.push(dict);
 		str = "";
 	}
@@ -1036,12 +1041,10 @@ function getDict(value) {
 		pushStr();
 		var l = v;
 		var dict = {};
-		for (var i = 0; i + 1 < l.length; i += 2) {
-			var keyV = l[i];
-			var valueV = l[i + 1];
+		KvlistForEach(l, function(keyV, valueV) {
 			var key = getString(keyV);
 			dict[key] = valueV;
-		}
+		});
 		dicts.push(dict);
 	} else if (isDict(v)) {
 		pushStr();
@@ -2102,6 +2105,7 @@ var rmacros_std = [
 // list
 	{
 		name: "list",
+		names: ["list", "kvlist"],
 		func: function(arg) {
 			var values = Array.from(arguments).map(function(arg) {
 				return this.evaluate(arg);
@@ -2362,15 +2366,13 @@ var rmacros_std = [
 		func: function(arg, kvlistA) {
 			var kvlist = this.evaluateAsList(kvlistA);
 			var list = [];
-			for (var i = 0; i + 1 < kvlist.length; i += 2) {
-				var key = kvlist[i];
-				var value = kvlist[i + 1];
+			KvlistForEach(kvlist, function(key, value) {
 				var value2 = this.evaluate(arg, function(mt) {
 					mt.addMacro("a", key);
 					mt.addMacro("b", value);
 				});
 				list.push(value2);
-			}
+			});
 			var r = list;
 			return r;
 		}
@@ -2383,14 +2385,12 @@ var rmacros_std = [
 		func: function(arg, kvlistA) {
 			var kvlist = this.evaluateAsList(kvlistA);
 			var kvlist2 = [];
-			for (var i = 0; i + 1 < kvlist.length; i += 2) {
-				var key = kvlist[i];
-				var value = kvlist[i + 1];
+			KvlistForEach(kvlist, function(key, value) {
 				var key2 = this.evaluate(arg, function(mt) {
 					mt.addMacro("_", key);
 				});
 				kvlist2.push(key2, value);
-			}
+			});
 			var r = kvlist2;
 			return r;
 		}
@@ -2403,14 +2403,12 @@ var rmacros_std = [
 		func: function(arg, kvlistA) {
 			var kvlist = this.evaluateAsList(kvlistA);
 			var kvlist2 = [];
-			for (var i = 0; i + 1 < kvlist.length; i += 2) {
-				var key = kvlist[i];
-				var value = kvlist[i + 1];
+			KvlistForEach(kvlist, function(key, value) {
 				var value2 = this.evaluate(arg, function(mt) {
 					mt.addMacro("_", value);
 				});
 				kvlist2.push(key, value2);
-			}
+			}, this);
 			var r = kvlist2;
 			return r;
 		}
@@ -2424,12 +2422,10 @@ var rmacros_std = [
 				return this.evaluate(arg);
 			}, this);
 			var dict = {};
-			for (var i = 0; i + 1 < values.length; i += 2) {
-				var keyV = values[i];
-				var valueV = values[i + 1];
+			KvlistForEach(values, function(keyV, valueV) {
 				var key = getString(keyV);
 				dict[key] = valueV;
-			}
+			});
 			return dict;
 		}
 	},
@@ -2456,12 +2452,10 @@ var rmacros_std = [
 			var values = args.map(function(arg) {
 				return this.evaluate(arg);
 			}, this);
-			for (var i = 0; i + 1 < values.length; i += 2) {
-				var keyV = values[i];
-				var valueV = values[i + 1];
+			KvlistForEach(values, function(keyV, valueV) {
 				var key = getString(keyV);
 				dict[key] = valueV;
-			}
+			});
 			return dict;
 		}
 	},
