@@ -33,6 +33,13 @@ test
 
 Hello, world!
 \say{Hello, world!}
+\join{ }{\repeat{Hello, world!}{3}}
+
+\set{r}{0}
+\lfor{k}{\range{1}{500}}{
+  \put{r}{\add{\r}{\div{1}{\sub{\mul{4}{\k}}{3}}}{\div{-1}{\sub{\mul{4}{\k}}{1}}}}
+}
+\mul{4}{\r}
 
 \import{Math}
 \Math{PI}
