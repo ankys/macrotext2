@@ -1383,9 +1383,9 @@ var rmacros_std = [
 		name: "echo",
 		func: function(arg) {
 			var values = Array.from(arguments).map(function(arg) {
-				this.evaluate(arg);
+				return this.evaluate(arg);
 			}, this);
-			var value = new ValueSequence(node.src, values);
+			var value = new ValueSequence(this.src, values);
 			return value;
 		}
 	},
@@ -2216,18 +2216,34 @@ var rmacros_std = [
 	},
 // sort
 
-{ name: "lfor",
-	names: ["lfor", "list_for", "lforeach", "list_foreach"],
-	num_arg: 3,
-	func: function(nameA, listA, arg) {
-		var name = this.evaluateAsString(nameA);
-		var list = this.evaluateAsList(listA);
-		list.forEach(function(value) {
-			this.evaluate(arg, function(mt) {
-				mt.addMacro(name, value);
-			});
-		}, this);
-	}
+// for
+	{
+		name: "for",
+		names: ["for", "foreach"],
+		num_arg: 3,
+		func: function(nameA, listA, arg) {
+			var name = this.evaluateAsString(nameA);
+			var list = this.evaluateAsList(listA);
+			list.forEach(function(value) {
+				this.evaluate(arg, function(mt) {
+					mt.addMacro(name, value);
+				});
+			}, this);
+		}
+	},
+// lfor
+	{
+		name: "lfor",
+		names: ["lfor", "list_for", "lforeach", "list_foreach"],
+		num_arg: 2,
+		func: function(arg, listA) {
+			var list = this.evaluateAsList(listA);
+			list.forEach(function(value) {
+				this.evaluate(arg, function(mt) {
+					mt.addMacro("_", value);
+				});
+			}, this);
+		}
 	},
 // map
 	{
