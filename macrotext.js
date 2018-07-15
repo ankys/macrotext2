@@ -97,8 +97,13 @@ Object.merge = function() {
 	Object.assign.apply(null, arguments);
 	return obj;
 };
+Object.forEach = function(obj, callback, self) {
+	for (var key in obj) {
+		var value = obj[key];
+		callback.call(self, key, value, obj);
+	}
+};
 Object.map = function(obj, callback, self) {
-	// var obj = this;
 	var obj2 = {};
 	for (var key in obj) {
 		var value = obj[key];
@@ -915,13 +920,12 @@ function getString(value) {
 	} else if (isDict(v)) {
 		var d = v;
 		str += " ";
-		for (var key in d) {
-			var value = d[key];
+		Object.forEach(d, function(key, value) {
 			str += key;
 			str += " ";
 			sub(value);
 			str += " ";
-		}
+		});
 	} else {
 		// str += "[object]";
 		var o = v;
@@ -978,11 +982,10 @@ function getList(value) {
 		pushStr();
 		var d = v;
 		var list = [];
-		for (var key in d) {
-			var valueV = d[key];
+		Object.forEach(d, function(key, valueV) {
 			var keyV = new Value(src, key);
 			list.push(keyV, valueV);
-		}
+		});
 		lists.push(list);
 	} else {
 		// str += "[object]";
@@ -2372,7 +2375,7 @@ var rmacros_std = [
 					mt.addMacro("b", value);
 				});
 				list.push(value2);
-			});
+			}, this);
 			var r = list;
 			return r;
 		}
@@ -2390,7 +2393,7 @@ var rmacros_std = [
 					mt.addMacro("_", key);
 				});
 				kvlist2.push(key2, value);
-			});
+			}, this);
 			var r = kvlist2;
 			return r;
 		}
