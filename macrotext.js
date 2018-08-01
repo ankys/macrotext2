@@ -2143,17 +2143,34 @@ var rmacros_std = [
 			return list;
 		}
 	},
-{ name: "repeat",
-	num_arg: 2,
-	func: function(arg, countA) {
-		var list = this.evaluateAsList(arg);
-		var count = this.evaluateAsInteger(countA);
-		var r = [];
-		for (var i = 0; i < count; i++) {
-			Array.prototype.push.apply(r, list);
+// repeat
+	{
+		name: "repeat",
+		num_arg: 2,
+		func: function(arg, countA) {
+			var value = this.evaluate(arg);
+			var count = this.evaluateAsInteger(countA);
+			var r = [];
+			for (var i = 0; i < count; i++) {
+				r.push(value);
+			}
+			return r;
 		}
-		return r;
-	}
+	},
+// lrepeat
+	{
+		name: "lrepeat",
+		names: ["lrepeat", "list_repeat"],
+		num_arg: 2,
+		func: function(arg, countA) {
+			var list = this.evaluateAsList(arg);
+			var count = this.evaluateAsInteger(countA);
+			var r = [];
+			for (var i = 0; i < count; i++) {
+				Array.prototype.push.apply(r, list);
+			}
+			return r;
+		}
 	},
 { name: "range",
 	num_arg: 2,
