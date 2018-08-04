@@ -134,6 +134,7 @@ function evalExpr(expr, args) {
 var messageTypes = {
 	TOKEN: "Debug",
 	LITTLEVME: "Warning",
+	EXCESSVME: "Warning",
 	LITTLEME: "Warning",
 	EXCESSME: "Warning",
 	MACRO: "Debug",
@@ -146,6 +147,7 @@ var messageTypes = {
 var messagesC = {
 	TOKEN: "token $1",
 	LITTLEVME: "no end to \\$1",
+	EXCESSVME: "too many $1",
 	LITTLEME: "too few }",
 	EXCESSME: "too many }",
 	MACRO: "macro $1",
@@ -248,7 +250,7 @@ function parse(text, callback, tag) {
 		return new Src(tag, pos, len);
 	}
 	// var lexer = /\\(?:\x0D\x0A|\x0D|\x0A|$)|\\@\{|\\@\}|\\@?\w+(?:\s*\{)?|\{|\}(?:\s*\{)?|\\.|[^\\\{\}]+/g;
-	var lexer = /\\(?:\x0D\x0A|\x0D|\x0A|$)|\\\/+[^]*?(?:\x0D\x0A|\x0D|\x0A|$)|\\!\{[^]*?(?:\\!\}|$)|\\(`+)[^]*?(?:\1|$)|\\@\{[^]*?(?:\\@\}|$)|\\(?:\+|-|=|%|\^|&|\*|@\w+|!\w+|\?\w+|\w+)(?:\s*\{)?|\{|\}(?:\s*\{)?|\\#[0-9]+|\\#x[0-9a-fA-F]+|\\[^]|[^\\\{\}]+/g;
+	var lexer = /\\(?:\x0D\x0A|\x0D|\x0A|$)|\\\/+[^]*?(?:\x0D\x0A|\x0D|\x0A|$)|\\!\{[^]*?(?:\\!\}|$)|\\!\}|\\(`+)[^]*?(?:\1|$)|\\@\{[^]*?(?:\\@\}|$)|\\@\}|\\(?:\+|-|=|%|\^|&|\*|@\w+|!\w+|\?\w+|\w+)(?:\s*\{)?|\{|\}(?:\s*\{)?|\\#[0-9]+|\\#x[0-9a-fA-F]+|\\[^]|[^\\\{\}]+/g;
 	var nodesRoot = [];
 	var macrolistS = [];
 	function addNode(node) {
@@ -304,6 +306,8 @@ function parse(text, callback, tag) {
 			if (lack) {
 				fireCallback(callback, "LITTLEVME", src, [m[1]]);
 			}
+		} else if (str === "\\!\}") {
+			fireCallback(callback, "EXCESSVME", src, ["\\!\}"]);
 		} else if (m = str.match(/^\\(`+)([^]*?)(\1|$)/)) {
 			// scalar in vervatime mode
 			var lack = m[3] === "";
@@ -318,6 +322,8 @@ function parse(text, callback, tag) {
 			if (lack) {
 				fireCallback(callback, "LITTLEVME", src, [m[1]]);
 			}
+		} else if (str === "\\@\}") {
+			fireCallback(callback, "EXCESSVME", src, ["\\@\}"]);
 		} else if (m = str.match(/^\\(\+|-|=|%|\^|&|\*|@\w+|!\w+|\?\w+|\w+)((\s*)(\{))?$/)) {
 			// macro
 			beginMacro(pos, m[1]);
