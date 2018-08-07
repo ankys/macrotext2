@@ -570,7 +570,9 @@ function isNode(v) {
 
 // evaluate(node: Node, mt: MacroText, callback: MTCallback, hook: function): Value
 function checkEvalueted(node) {
-	if (node instanceof Array) {
+	if (!defined(node)) {
+		return true;
+	} else if (node instanceof Array) {
 		var nodes = node;
 		return nodes.every(function(node) {
 			return defined(node.value);
@@ -646,7 +648,7 @@ function evalMacroCall(node, mt, callback) {
 		return value;
 	} else if (command === "=") {
 		var arg = args[0];
-		var r = getNumber(evaluate(arg, mt, callback));
+		var r = defined(arg) ? getNumber(evaluate(arg, mt, callback)) : 0;
 		var value = new Value(node.src, r);
 		if (checkEvalueted(arg)) {
 			node.value = value;
