@@ -33,7 +33,7 @@ test
 
 Hello, world!
 \say{Hello, world!}
-\join{ }{\repeat{Hello, world!}{3}}
+\join{  }{\repeat{Hello, world!}{3}}
 
 \set{r}{0}
 \foreach{k}{\range{1}{500}}{
@@ -70,11 +70,13 @@ function convert() {
 		var msg = getMsg();
 		textError += type + ": " + msg + "\n";
 	};
+	var t1 = performance.now();
 	var mt = MacroText.create({ allowSystem: true, callback: callback });
 	var textInput = eInput.value;
 	var textOutput = mt.processAsString(textInput);
+	var t2 = performance.now();
 	eOutput.value = textOutput;
-	eError.value = textError;
+	eError.value = textError + (t2-t1) + "ms\n";
 }
 eInput.addEventListener("change", convert);
 convert();
