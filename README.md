@@ -17,3 +17,9 @@ $ node macrotext.js '\set_list{a}{1 2}\join{:}{\map{\add{\_}{2}}{\a}}'
 ```
 
 And see `test.txt` and `test.html`.
+
+## License
+
+MIT License
+
+Copyright (c) 2018 Atsushi Nakayasu
