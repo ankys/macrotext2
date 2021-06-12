@@ -1,0 +1,12 @@
+{
+  "name": "macrotext2",
+  "version": "1.0.0",
+  "author": "Atsushi Nakayasu",
+  "description": "A text preprocessor with TeX-like syntax and powerful preset macros. [Live demo](https://ankys.github.io/macrotext2/test.html)",
+  "main": "macrotext.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ankys/macrotext2.git"
+  },
+  "license": "MIT"
+}

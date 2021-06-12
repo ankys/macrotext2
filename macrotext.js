@@ -130,6 +130,10 @@ function evalExpr(expr, args) {
 	var $_ = args;
 	return eval(expr);
 }
+var rutimeName =
+	"process" in global && "release" in global.process && "name" in global.process.release && global.process.release.name === "node" ? "node":
+	"Deno" in global && "version" in global.Deno && "deno" in global.Deno.version ? "deno":
+	"other";
 
 var messageTypes = {
 	TOKEN: "Debug",
@@ -2648,14 +2652,14 @@ var rmacros_system = [
 	},
 ];
 
-if ("process" in global && "release" in global.process && "name" in global.process.release && global.process.release.name === "node") {
+if (rutimeName === "node") {
 	module.exports = MacroText;
 } else {
 	global.MacroText = MacroText;
 }
 
 // for debug
-if (typeof process === "object" && process.argv instanceof Array && typeof __filename !== "undefined" && process.argv[1] === __filename) {
+if (rutimeName === "node" && process.argv[1] === __filename) {
 	(function() {
 	var argv = process.argv.slice(2);
 	var callback = function(code, src, getMsg) {
@@ -2681,5 +2685,31 @@ if (typeof process === "object" && process.argv instanceof Array && typeof __fil
 	console.log(value.toString());
 	})();
 }
+// if (rutimeName === "deno" && import.meta.main) {
+// 	(function() {
+// 	var argv = Deno.args;
+// 	var callback = function(code, src, getMsg) {
+// 		var type = mt.getMessageType(code);
+// 		if (type === "Debug") {
+// 			// return;
+// 		}
+// 		var pos = src.pos;
+// 		var len = src.len;
+// 		var tag = src.tag;
+// 		var file = defined(tag.file) ? tag.file : "-";
+// 		var msg = getMsg();
+// 		console.log("%s:%s:%s:%s: %s", file, pos, len, type, msg);
+// 	};
+// 	var mt = MacroText.create({ allowSystem: true, callback: callback });
+// 	var text = argv[0] || "";
+// 	console.log(text);
+// 	var node = mt.parse(text, { });
+// 	// console.log(node);
+// 	console.log(node.toString());
+// 	var value = mt.evaluate(node);
+// 	// console.log(value);
+// 	console.log(value.toString());
+// 	})();
+// }
 
 })(Function("return this")());
